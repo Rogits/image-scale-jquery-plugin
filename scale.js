@@ -1,60 +1,112 @@
 /* 
  * License: N/A
- * Author: @vic_rog
+ * Twitter: @vic_rog
  * 
- * It scales images to fit full screen width.
+ * It scales images.
  * 
  * Copyright 2015.
  */
 
-$.fn.scaleImage = function()
-{                       
-    var $scale = this;
-    var settings = {};
-    var $doc = $(document);
-    var getDocumentWidth = function(){
-        return $doc.width();
-    };
-    var documentWidth = getDocumentWidth();
-    var documentHeight = parseInt($doc.height());
-    var getImageWidth = function(){
-        return parseInt($scale.css("width"));
-    };
-    var getImageHeight = function(){
-        return parseInt($scale.css("height"));
-    };
-    var imgWidth = getImageWidth();
-    var imgHeight = getImageHeight();
-    var getImageOffsetTop = function(){
-        return $scale.offset().top;
-    };
-    var getImageOffsetLeft = function(){
-        return $scale.offset().left;
-    };
-    var imgOffsetLeft = getImageOffsetLeft();
+$.fn.scaleImage = function(options)
+{                  
+    var $window = $(window);
+    var $img = this;                    
+    var widthScaleRatio;
+    var heightScaleRatio;
 
-    var docImageWidthScaleRatio = documentWidth / imgWidth;
-    var docImageHeightScaleRatio = documentHeight / imgHeight;
-    $scale.css({
-        "-ms-transform" : "scaleX(" + docImageWidthScaleRatio + ")",
-        "-webkit-transform": "scaleX(" + docImageWidthScaleRatio + ")",
-        "transform": "scaleX(" + docImageWidthScaleRatio + ")"
-    });
-    imgOffsetLeft = getImageOffsetLeft(); // reacquire new dimensions
-     $scale.css("left", "+=" + 
-            (imgOffsetLeft * -1) + "px");
-    var getScaledImageWidth = function(){
-        return Math.round(getImageWidth() * docImageWidthScaleRatio);
+    var defaults = {
+        position: "absolute",
+        destTop: 0,
+        destLeft: 0,
+        destWidth: $window.width(),
+        destHeight: $img.height(),
+        scaleWidth: true,
+        scaleHeight: false,
+        useCss3: false
     };
-    var getScaledImageHeight = function(){
-        return Math.round(getImageHeight() * docImageHeightScaleRatio);
-    };
-    settings.imageOffsetTop = getImageOffsetTop();
-    settings.imageOffsetLeft = imgOffsetLeft;
-    settings.imageWidth = imgWidth;
-    settings.imageHeight = imgHeight;
-    settings.scaledImageWidth = getScaledImageWidth();
-    settings.scaledImageHeight = getScaledImageHeight();
 
-    return settings;
-};
+    var settings = $.extend({}, defaults, options);
+
+    if(settings.useCss3)
+    {
+        if(settings.scaleWidth)
+        {                            
+            widthScaleRatio = settings.destWidth / $img.width();
+
+            $img.css({
+                "position": settings.position,
+                "-ms-transform" : "scaleX(" + 
+                        widthScaleRatio + ")",
+                "-webkit-transform": "scaleX(" +
+                        widthScaleRatio + ")",
+                "transform": "scaleX(" + 
+                        widthScaleRatio + ")"
+            });
+            if(settings.position === "absolute" || 
+                    settings.position === "relative")
+            {
+                $img.css({
+                    "top": settings.destTop,
+                    "left": (-1 * $img.offset().left)
+                });  
+            }
+        }
+        if(settings.scaleHeight)
+        {                            
+            heightScaleRatio = 
+                    settings.destHeight / $img.height();
+
+            $img.css({
+                "position": settings.position,
+                "-ms-transform": "scaleY(" +
+                        heightScaleRatio + ")",
+                "-webkit-transform": "scaleY(" +
+                        heightScaleRatio + ")",
+                "transform": "scaleY(" +
+                        heightScaleRatio + ")"
+            });
+            
+            if(settings.position === "absolute" || 
+                    settings.position === "relative")
+            {
+                $img.css({
+                    "top": settings.destTop,
+                    "left": settings.destLeft
+                });
+            }
+        }
+    }
+    else
+    {
+        if(settings.scaleWidth)
+        {
+            $img.css({
+                "position": settings.position,                
+                "width": settings.destWidth
+            });  
+            if(settings.position === "absolute" ||
+                    settings.position === "relative")
+            {
+                $img.css({
+                    "top": settings.destTop,
+                    "left": settings.destLeft
+                });
+            }
+        }
+        if(settings.scaleHeight)
+        {
+            $img.css({
+                "position": settings.position,
+                "height": settings.destHeight
+            });
+            if(settings.position === "absolute" || 
+                    settings.position === "relative")
+            {
+                $img.css({
+                    "top": settings.destTop,
+                    "left": settings.destLeft
+                });
+            }
+        }
+    }                   
+}; 
