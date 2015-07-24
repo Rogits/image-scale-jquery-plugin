@@ -4,7 +4,5 @@ Using jquery you can resize images quickly.
 
 An example,
 
-$("img.scale").scaleImage();
+$("img").scaleImage({});
 
-console.log("\nImage width: " + pic.imageWidth);
-console.log("\nImage scaled width: " + pic.scaledImageWidth); 
